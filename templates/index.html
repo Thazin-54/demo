@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe - Ultimate Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .mode-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            background: #e0e0e0;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            color: #333;
+            font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status.winner {
+            color: #4caf50;
+            animation: pulse 1s infinite;
+        }
+
+        .status.tie {
+            color: #ff9800;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+            perspective: 1000px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border: none;
+            border-radius: 20px;
+            font-size: 4em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cell:hover:not(.taken) {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(145deg, #ffffff, #f8f8f8);
+        }
+
+        .cell.taken {
+            cursor: not-allowed;
+        }
+
+        .cell.x {
+            color: #667eea;
+            animation: popIn 0.3s ease;
+        }
+
+        .cell.o {
+            color: #764ba2;
+            animation: popIn 0.3s ease;
+        }
+
+        .cell.winning {
+            background: linear-gradient(145deg, #4caf50, #66bb6a);
+            color: white;
+            animation: winningPulse 0.6s ease;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes winningPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset:active {
+            transform: translateY(-1px);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+            border-radius: 20px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .score-x {
+            color: #667eea;
+        }
+
+        .score-o {
+            color: #764ba2;
+        }
+
+        .score-tie {
+            color: #ff9800;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .cell {
+                font-size: 3em;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Tic Tac Toe</h1>
+        
+        <div class="mode-selector">
+            <button class="mode-btn active" onclick="setMode('pvp')">Player vs Player</button>
+            <button class="mode-btn" onclick="setMode('ai')">Player vs AI</button>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Player X</div>
+                <div class="score-value score-x" id="scoreX">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Ties</div>
+                <div class="score-value score-tie" id="scoreTie">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Player O</div>
+                <div class="score-value score-o" id="scoreO">0</div>
+            </div>
+        </div>
+
+        <div class="status" id="status">Player X's Turn</div>
+
+        <div class="board" id="board">
+            <button class="cell" onclick="makeMove(0)"></button>
+            <button class="cell" onclick="makeMove(1)"></button>
+            <button class="cell" onclick="makeMove(2)"></button>
+            <button class="cell" onclick="makeMove(3)"></button>
+            <button class="cell" onclick="makeMove(4)"></button>
+            <button class="cell" onclick="makeMove(5)"></button>
+            <button class="cell" onclick="makeMove(6)"></button>
+            <button class="cell" onclick="makeMove(7)"></button>
+            <button class="cell" onclick="makeMove(8)"></button>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-reset" onclick="resetGame()">🔄 New Game</button>
+        </div>
+    </div>
+
+    <script>
+        let gameMode = 'pvp';
+        let scores = { x: 0, o: 0, tie: 0 };
+        let isProcessing = false;
+
+        function setMode(mode) {
+            gameMode = mode;
+            const buttons = document.querySelectorAll('.mode-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            resetGame();
+        }
+
+        async function makeMove(position) {
+            if (isProcessing) return;
+            
+            const cell = document.querySelectorAll('.cell')[position];
+            if (cell.classList.contains('taken')) return;
+
+            isProcessing = true;
+
+            try {
+                const response = await fetch('/api/move', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ position, mode: gameMode }),
+                });
+
+                const data = await response.json();
+                updateBoard(data);
+
+                if (data.ai_move !== undefined) {
+                    setTimeout(() => {
+                        updateBoard(data);
+                        isProcessing = false;
+                    }, 300);
+                } else {
+                    isProcessing = false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                isProcessing = false;
+            }
+        }
+
+        function updateBoard(data) {
+            const cells = document.querySelectorAll('.cell');
+            
+            data.board.forEach((value, index) => {
+                cells[index].textContent = value;
+                cells[index].classList.remove('x', 'o', 'taken', 'winning');
+                
+                if (value === 'X') {
+                    cells[index].classList.add('x', 'taken');
+                } else if (value === 'O') {
+                    cells[index].classList.add('o', 'taken');
+                }
+            });
+
+            const statusEl = document.getElementById('status');
+            statusEl.classList.remove('winner', 'tie');
+
+            if (data.game_over) {
+                if (data.winner === 'tie') {
+                    statusEl.textContent = "🤝 It's a Tie!";
+                    statusEl.classList.add('tie');
+                    scores.tie++;
+                    updateScores();
+                } else {
+                    statusEl.textContent = `🎉 Player ${data.winner} Wins!`;
+                    statusEl.classList.add('winner');
+                    
+                    if (data.winner === 'X') {
+                        scores.x++;
+                    } else {
+                        scores.o++;
+                    }
+                    updateScores();
+
+                    if (data.winning_line) {
+                        data.winning_line.forEach(index => {
+                            cells[index].classList.add('winning');
+                        });
+                    }
+                }
+            } else {
+                const playerName = gameMode === 'ai' && data.current_player === 'O' ? 'AI' : `Player ${data.current_player}`;
+                statusEl.textContent = `${playerName}'s Turn`;
+            }
+        }
+
+        function updateScores() {
+            document.getElementById('scoreX').textContent = scores.x;
+            document.getElementById('scoreO').textContent = scores.o;
+            document.getElementById('scoreTie').textContent = scores.tie;
+        }
+
+        async function resetGame() {
+            isProcessing = true;
+            
+            try {
+                const response = await fetch('/api/reset', {
+                    method: 'POST',
+                });
+
+                const data = await response.json();
+                updateBoard(data);
+                isProcessing = false;
+            } catch (error) {
+                console.error('Error:', error);
+                isProcessing = false;
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            fetch('/api/state')
+                .then(response => response.json())
+                .then(data => updateBoard(data));
+        });
+    </script>
+</body>
+</html>
