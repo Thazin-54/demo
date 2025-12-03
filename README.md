@@ -1,9 +1,4 @@
-Got it!
-You want a **simpler, cleaner README** — no quick links, no long sections — just **short paragraphs and bullet points**, highlighting the most important details.
 
-Here is a **clean, minimal, professional README** you can copy directly:
-
----
 
 # 🎮 Tic-Tac-Toe Game (Python + Flask)
 
